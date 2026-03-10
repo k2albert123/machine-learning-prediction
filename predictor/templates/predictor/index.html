@@ -1,297 +1,556 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vehicle Analytics System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-        .nav-link.active { background-color: #0d6efd !important; color: white !important; }
-        .sidebar-section { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #dee2e6; }
-        .sidebar-section:last-child { border-bottom: none; }
-        .sidebar-title { font-size: 0.75rem; text-transform: uppercase; color: #6c757d; font-weight: 600; margin-bottom: 0.5rem; }
+      .section-content {
+        display: none;
+      }
+      .section-content.active {
+        display: block;
+      }
+      .nav-link.active {
+        background-color: #0d6efd !important;
+        color: white !important;
+      }
+      .sidebar-section {
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .sidebar-section:last-child {
+        border-bottom: none;
+      }
+      .sidebar-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
     </style>
-</head>
+  </head>
 
-<body class="bg-light">
-
+  <body class="bg-light">
     <div class="container-fluid">
-        <div class="row">
+      <div class="row">
+        <nav
+          id="sidebarMenu"
+          class="col-md-3 col-lg-2 d-md-block bg-white border-end sticky-top vh-100 overflow-y-auto p-3"
+        >
+          <div class="mb-4 ps-2">
+            <h5 class="text-primary fw-bold mb-0">Vehicle Analytics</h5>
+            <small class="text-muted">ML Dashboard</small>
+          </div>
 
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white border-end sticky-top vh-100 overflow-y-auto p-3">
-                <div class="mb-4 ps-2">
-                    <h5 class="text-primary fw-bold mb-0">Vehicle Analytics</h5>
-                    <small class="text-muted">ML Dashboard</small>
+          <div class="sidebar-section">
+            <div class="sidebar-title">Data Analysis</div>
+            <div class="nav nav-pills flex-column">
+              <a
+                class="nav-link mb-1"
+                href="#data-exploration"
+                data-section="data-exploration"
+                >Data Exploration</a
+              >
+              <a
+                class="nav-link mb-1"
+                href="#statistical-analysis"
+                data-section="statistical-analysis"
+                >Statistical Analysis</a
+              >
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-title">Machine Learning</div>
+            <div class="nav nav-pills flex-column">
+              <a
+                class="nav-link mb-1"
+                href="#regression-analysis"
+                data-section="regression-analysis"
+                >Price Prediction</a
+              >
+              <a
+                class="nav-link mb-1"
+                href="#classification-analysis"
+                data-section="classification-analysis"
+                >Income Classification</a
+              >
+              <a
+                class="nav-link mb-1"
+                href="#clustering-analysis"
+                data-section="clustering-analysis"
+                >Customer Segmentation</a
+              >
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-title">Model Evaluation</div>
+            <div class="nav nav-pills flex-column">
+              <a
+                class="nav-link mb-1"
+                href="#regression-evaluation"
+                data-section="regression-evaluation"
+                >Regression Metrics</a
+              >
+              <a
+                class="nav-link mb-1"
+                href="#classification-evaluation"
+                data-section="classification-evaluation"
+                >Classification Metrics</a
+              >
+              <a
+                class="nav-link mb-1"
+                href="#clustering-evaluation"
+                data-section="clustering-evaluation"
+                >Clustering Metrics</a
+              >
+            </div>
+          </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+          <header class="mb-4 border-bottom pb-3">
+            <h1 class="fw-bold text-dark">Vehicle Analytics Dashboard</h1>
+            <p class="text-secondary mb-0">Comprehensive ML Analysis System</p>
+          </header>
+
+          <!-- Data Exploration Section -->
+          <section id="data-exploration" class="section-content active mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Data Exploration</span>
+              </div>
+              <div class="card-body overflow-x-auto">
+                {{ dataset_exploration|safe }}
+              </div>
+            </div>
+          </section>
+
+          <!-- Statistical Analysis Section -->
+          <section id="statistical-analysis" class="section-content mb-5">
+            <div class="card shadow-sm border-0 mb-4">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Statistical Analysis</span>
+              </div>
+              <div class="card-body overflow-x-auto">
+                {{ data_exploration|safe }}
+              </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Rwanda Vehicle Distribution Map</span>
+              </div>
+              <div class="card-body">{{ rwanda_map|safe }}</div>
+            </div>
+          </section>
+
+          <!-- Regression Analysis Section -->
+          <section id="regression-analysis" class="section-content mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Price Prediction</span>
+              </div>
+              <div class="card-body">
+                <form method="POST" class="row g-3">
+                  {% csrf_token %}
+                  <input type="hidden" name="form_type" value="regression" />
+                  <input
+                    type="hidden"
+                    name="active_section"
+                    value="regression-analysis"
+                  />
+                  <div class="col-md-6">
+                    <label class="form-label">Year of Manufacture</label>
+                    <input
+                      type="number"
+                      name="year"
+                      class="form-control"
+                      value="2022"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Kilometers Driven</label>
+                    <input
+                      type="number"
+                      name="km"
+                      class="form-control"
+                      value="15000"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Seats</label>
+                    <input
+                      type="number"
+                      name="seats"
+                      class="form-control"
+                      value="5"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Annual Income (Estimated)</label>
+                    <input
+                      type="number"
+                      name="income"
+                      class="form-control"
+                      value="800000"
+                      required
+                    />
+                  </div>
+                  <div class="col-12 mt-4 text-center">
+                    <button type="submit" class="btn btn-primary px-5">
+                      Predict Selling Price
+                    </button>
+                  </div>
+                </form>
+                {% if price and active_section == 'regression-analysis' %}
+                <div class="alert alert-success mt-4 mb-0 text-center">
+                  <h5 class="alert-heading mb-1">Predicted Selling Price</h5>
+                  <h3 class="mb-0">&#8377; {{ price|floatformat:2 }}</h3>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </section>
+
+          <!-- Classification Analysis Section -->
+          <section id="classification-analysis" class="section-content mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Income Classification</span>
+              </div>
+              <div class="card-body">
+                <form method="POST" class="row g-3">
+                  {% csrf_token %}
+                  <input
+                    type="hidden"
+                    name="form_type"
+                    value="classification"
+                  />
+                  <input
+                    type="hidden"
+                    name="active_section"
+                    value="classification-analysis"
+                  />
+                  <div class="col-md-6">
+                    <label class="form-label">Year of Manufacture</label>
+                    <input
+                      type="number"
+                      name="year"
+                      class="form-control"
+                      value="2022"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Kilometers Driven</label>
+                    <input
+                      type="number"
+                      name="km"
+                      class="form-control"
+                      value="15000"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Seats</label>
+                    <input
+                      type="number"
+                      name="seats"
+                      class="form-control"
+                      value="5"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Annual Income (Estimated)</label>
+                    <input
+                      type="number"
+                      name="income"
+                      class="form-control"
+                      value="800000"
+                      required
+                    />
+                  </div>
+                  <div class="col-12 mt-4 text-center">
+                    <button type="submit" class="btn btn-primary px-5">
+                      Classify Income Group
+                    </button>
+                  </div>
+                </form>
+                {% if prediction and active_section == 'classification-analysis' %}
+                <div class="alert alert-info mt-4 mb-0 text-center">
+                  <h5 class="alert-heading mb-1">Classification Result</h5>
+                  <h3 class="mb-0">{{ prediction }}</h3>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </section>
+
+          <!-- Clustering Analysis Section -->
+          <section id="clustering-analysis" class="section-content mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Customer Segmentation</span>
+              </div>
+              <div class="card-body">
+                <form method="POST" class="row g-3">
+                  {% csrf_token %}
+                  <input type="hidden" name="form_type" value="clustering" />
+                  <input
+                    type="hidden"
+                    name="active_section"
+                    value="clustering-analysis"
+                  />
+                  <div class="col-md-6">
+                    <label class="form-label">Year of Manufacture</label>
+                    <input
+                      type="number"
+                      name="year"
+                      class="form-control"
+                      value="2022"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Kilometers Driven</label>
+                    <input
+                      type="number"
+                      name="km"
+                      class="form-control"
+                      value="15000"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Seats</label>
+                    <input
+                      type="number"
+                      name="seats"
+                      class="form-control"
+                      value="5"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Annual Income (Estimated)</label>
+                    <input
+                      type="number"
+                      name="income"
+                      class="form-control"
+                      value="800000"
+                      required
+                    />
+                  </div>
+                  <div class="col-12 mt-4 text-center">
+                    <button type="submit" class="btn btn-primary px-5">
+                      Segment Customer
+                    </button>
+                  </div>
+                </form>
+                {% if prediction and active_section == 'clustering-analysis' %}
+                <div class="alert alert-warning mt-4 mb-0 text-center">
+                  <h5 class="alert-heading mb-1">Customer Segment</h5>
+                  <h3 class="mb-0">{{ prediction }}</h3>
+                  {% if price %}
+                  <div class="mt-2 text-muted small">
+                    Based on predicted price: &#8377; {{ price|floatformat:2 }}
+                  </div>
+                  {% endif %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </section>
+
+          <!-- Regression Evaluation Section -->
+          <section id="regression-evaluation" class="section-content mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Regression Model Evaluation</span>
+              </div>
+              <div class="card-body overflow-x-auto">
+                {{ evaluations.regression.comparison|safe }}
+              </div>
+            </div>
+          </section>
+
+          <!-- Classification Evaluation Section -->
+          <section id="classification-evaluation" class="section-content mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold">Classification Model Evaluation</span>
+              </div>
+              <div class="card-body overflow-x-auto">
+                <p class="mb-3">
+                  The model has an accuracy of
+                  <strong>{{ evaluations.classification.accuracy }}%</strong>
+                  in correctly categorizing the income level based on historical
+                  vehicle data.
+                </p>
+                <div class="table-responsive">
+                  {{ evaluations.classification.comparison|safe }}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Clustering Evaluation Section -->
+          <section id="clustering-evaluation" class="section-content mb-5">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-white border-bottom py-3">
+                <span class="fw-bold text-dark"
+                  >Clustering Model Evaluation</span
+                >
+              </div>
+              <div class="card-body">
+                <!-- Metrics Overview -->
+                <div class="row mb-4">
+                  <div class="col-md-4 text-center">
+                    <h6 class="text-muted">Silhouette Score</h6>
+                    <h4 class="text-primary">
+                      {{ evaluations.clustering.silhouette|safe }}
+                    </h4>
+                    <small class="text-muted">
+                      {% if evaluations.clustering.silhouette > 0.9 %}Target
+                      Achieved{% else %}Below Target{% endif %}
+                    </small>
+                  </div>
+                  <div class="col-md-4 text-center">
+                    <h6 class="text-muted">Overall Income CV</h6>
+                    <h4 class="text-success">{{ cv_metrics.income_cv }}%</h4>
+                    <small class="text-muted">Coefficient of Variation</small>
+                  </div>
+                  <div class="col-md-4 text-center">
+                    <h6 class="text-muted">Overall Selling Price CV</h6>
+                    <h4 class="text-success">{{ cv_metrics.price_cv }}%</h4>
+                    <small class="text-muted">Coefficient of Variation</small>
+                  </div>
                 </div>
 
-                <div class="sidebar-section">
-                    <div class="sidebar-title">Data Analysis</div>
-                    <div class="nav nav-pills flex-column">
-                        <a class="nav-link mb-1" href="#data-exploration" data-section="data-exploration">Data Exploration</a>
-                        <a class="nav-link mb-1" href="#statistical-analysis" data-section="statistical-analysis">Statistical Analysis</a>
-                    </div>
+                <!-- Cluster Summary -->
+                <h6 class="text-muted mb-2">Cluster Summary</h6>
+                <div class="table-responsive mb-3">
+                  {{ evaluations.clustering.summary|safe }}
                 </div>
 
-                <div class="sidebar-section">
-                    <div class="sidebar-title">Machine Learning</div>
-                    <div class="nav nav-pills flex-column">
-                        <a class="nav-link mb-1" href="{% url 'regression_analysis' %}">Price Prediction</a>
-                        <a class="nav-link mb-1" href="{% url 'classification_analysis' %}">Income Classification</a>
-                        <a class="nav-link mb-1" href="{% url 'clustering_analysis' %}">Customer Segmentation</a>
-                    </div>
+                <!-- Detailed CV Analysis -->
+                <h6 class="text-muted mb-2">Detailed CV Analysis</h6>
+                <div class="table-responsive">
+                  {{ evaluations.clustering.cv_table|safe }}
                 </div>
 
-                <div class="sidebar-section">
-                    <div class="sidebar-title">Model Evaluation</div>
-                    <div class="nav nav-pills flex-column">
-                        <a class="nav-link mb-1" href="#regression-evaluation" data-section="regression-evaluation">Regression Metrics</a>
-                        <a class="nav-link mb-1" href="#classification-evaluation" data-section="classification-evaluation">Classification Metrics</a>
-                        <a class="nav-link mb-1" href="#clustering-evaluation" data-section="clustering-evaluation">Clustering Metrics</a>
-                    </div>
+                <!-- Customer Profiles -->
+                <h6 class="text-muted mb-2 mt-4">Customer Business Profiles</h6>
+                <div class="table-responsive">
+                  {{ evaluations.clustering.customer_profiles|safe }}
                 </div>
-            </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <header class="mb-4 border-bottom pb-3">
-                    <h1 class="fw-bold text-dark">Vehicle Analytics Dashboard</h1>
-                    <p class="text-secondary mb-0">Comprehensive ML Analysis System</p>
-                </header>
-
-                <!-- Data Exploration Section -->
-                <section id="data-exploration" class="section-content active mb-5">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Data Exploration</span>
+                <!-- Statistical Significance -->
+                <h6 class="text-muted mb-2 mt-4">Statistical Validation</h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="card border-secondary">
+                      <div class="card-header bg-light">
+                        <small class="fw-bold">Income ANOVA Test</small>
+                      </div>
+                      <div class="card-body p-3">
+                        <div class="d-flex justify-content-between">
+                          <span>F-Statistic:</span>
+                          <strong>{{ evaluations.clustering.statistical_significance.income_anova.f_statistic }}</strong>
                         </div>
-                        <div class="card-body overflow-x-auto">
-                            {{ dataset_exploration|safe }}
+                        <div class="d-flex justify-content-between">
+                          <span>P-Value:</span>
+                          <strong>{{ evaluations.clustering.statistical_significance.income_anova.p_value }}</strong>
                         </div>
+                        <div class="mt-2">
+                          {% if evaluations.clustering.statistical_significance.income_anova.significant %}
+                          <span class="badge bg-success">Statistically Significant</span>
+                          {% else %}
+                          <span class="badge bg-warning">Not Significant</span>
+                          {% endif %}
+                        </div>
+                      </div>
                     </div>
-                </section>
-
-                <!-- Statistical Analysis Section -->
-                <section id="statistical-analysis" class="section-content mb-5">
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Statistical Analysis</span>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="card border-secondary">
+                      <div class="card-header bg-light">
+                        <small class="fw-bold">Price ANOVA Test</small>
+                      </div>
+                      <div class="card-body p-3">
+                        <div class="d-flex justify-content-between">
+                          <span>F-Statistic:</span>
+                          <strong>{{ evaluations.clustering.statistical_significance.price_anova.f_statistic }}</strong>
                         </div>
-                        <div class="card-body overflow-x-auto">
-                            {{ data_exploration|safe }}
+                        <div class="d-flex justify-content-between">
+                          <span>P-Value:</span>
+                          <strong>{{ evaluations.clustering.statistical_significance.price_anova.p_value }}</strong>
                         </div>
+                        <div class="mt-2">
+                          {% if evaluations.clustering.statistical_significance.price_anova.significant %}
+                          <span class="badge bg-success">Statistically Significant</span>
+                          {% else %}
+                          <span class="badge bg-warning">Not Significant</span>
+                          {% endif %}
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Rwanda Vehicle Distribution Map</span>
-                        </div>
-                        <div class="card-body">
-                            {{ rwanda_map|safe }}
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Regression Analysis Section -->
-                <section id="regression-analysis" class="section-content mb-5">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Price Prediction</span>
-                        </div>
-                        <div class="card-body text-center p-5">
-                            <p class="text-muted mb-3">Price prediction has been moved to a dedicated page.</p>
-                            <a href="{% url 'regression_analysis' %}" class="btn btn-primary">Go to Price Prediction</a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Classification Analysis Section -->
-                <section id="classification-analysis" class="section-content mb-5">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Income Classification</span>
-                        </div>
-                        <div class="card-body text-center p-5">
-                            <p class="text-muted mb-3">Income classification has been moved to a dedicated page.</p>
-                            <a href="{% url 'classification_analysis' %}" class="btn btn-primary">Go to Income Classification</a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Clustering Analysis Section -->
-                <section id="clustering-analysis" class="section-content mb-5">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Customer Segmentation</span>
-                        </div>
-                        <div class="card-body text-center p-5">
-                            <p class="text-muted mb-3">Customer segmentation has been moved to a dedicated page.</p>
-                            <a href="{% url 'clustering_analysis' %}" class="btn btn-primary">Go to Customer Segmentation</a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Regression Evaluation Section -->
-                <section id="regression-evaluation" class="section-content mb-5">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Regression Model Evaluation</span>
-                        </div>
-                        <div class="card-body overflow-x-auto">
-                            {{ evaluations.regression.comparison|safe }}
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Classification Evaluation Section -->
-                <section id="classification-evaluation" class="section-content mb-5">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold">Classification Model Evaluation</span>
-                        </div>
-                        <div class="card-body overflow-x-auto">
-                            <p class="mb-3">The model has an accuracy of <strong>{{ evaluations.classification.accuracy }}%</strong> in correctly categorizing the income level based on historical vehicle data.</p>
-                            <div class="table-responsive">
-                                {{ evaluations.classification.comparison|safe }}
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Clustering Evaluation Section -->
-                <section id="clustering-evaluation" class="section-content mb-5">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-header bg-white border-bottom py-3">
-                            <span class="fw-bold text-dark">Clustering Model Evaluation</span>
-                        </div>
-                        <div class="card-body">
-                            <!-- Metrics Overview -->
-                            <div class="row mb-4">
-                                <div class="col-md-4 text-center">
-                                    <h6 class="text-muted">Silhouette Score</h6>
-                                    <h4 class="text-primary">{{ evaluations.clustering.silhouette|safe }}</h4>
-                                    <small class="text-muted">
-                                        {% if evaluations.clustering.silhouette|floatformat:2 > 0.9 %}Target Achieved{% else %}Below Target{% endif %}
-                                    </small>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <h6 class="text-muted">OVeral income Cv</h6>
-                                    <h4 class="text-success">{{ cv_metrics.income_cv }}%</h4>
-                                    <small class="text-muted">Coefficient of Variation</small>
-                                </div>
-                                 <div class="col-md-4 text-center">
-                                    <h6 class="text-muted">Overal Selling price CV</h6>
-                                    <h4 class="text-success">{{ cv_metrics.price_cv }}%</h4>
-                                    <small class="text-muted">Coefficient of Variation</small>
-                                </div>
-                               
-                            </div>
-                            
-                            <!-- Cluster Summary -->
-                            <h6 class="text-muted mb-2">Cluster Summary</h6>
-                            <div class="table-responsive mb-3">
-                                {{ evaluations.clustering.summary|safe }}
-                            </div>
-                            
-                            <!-- Detailed CV Analysis -->
-                            <h6 class="text-muted mb-2">Detailed CV Analysis</h6>
-                            <div class="table-responsive">
-                                {{ evaluations.clustering.cv_table|safe }}
-                            </div>
-                            
-                            <!-- Customer Profiles -->
-                            <h6 class="text-muted mb-2 mt-4">Customer Business Profiles</h6>
-                            <div class="table-responsive">
-                                {{ evaluations.clustering.customer_profiles|safe }}
-                            </div>
-                            
-                            <!-- Statistical Significance -->
-                            <h6 class="text-muted mb-2 mt-4">Statistical Validation</h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="card border-secondary">
-                                        <div class="card-header bg-light">
-                                            <small class="fw-bold">Income ANOVA Test</small>
-                                        </div>
-                                        <div class="card-body p-3">
-                                            <div class="d-flex justify-content-between">
-                                                <span>F-Statistic:</span>
-                                                <strong>{{ evaluations.clustering.statistical_significance.income_anova.f_statistic }}</strong>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <span>P-Value:</span>
-                                                <strong>{{ evaluations.clustering.statistical_significance.income_anova.p_value }}</strong>
-                                            </div>
-                                            <div class="mt-2">
-                                                {% if evaluations.clustering.statistical_significance.income_anova.significant %}
-                                                    <span class="badge bg-success">Statistically Significant</span>
-                                                {% else %}
-                                                    <span class="badge bg-warning">Not Significant</span>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card border-secondary">
-                                        <div class="card-header bg-light">
-                                            <small class="fw-bold">Price ANOVA Test</small>
-                                        </div>
-                                        <div class="card-body p-3">
-                                            <div class="d-flex justify-content-between">
-                                                <span>F-Statistic:</span>
-                                                <strong>{{ evaluations.clustering.statistical_significance.price_anova.f_statistic }}</strong>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <span>P-Value:</span>
-                                                <strong>{{ evaluations.clustering.statistical_significance.price_anova.p_value }}</strong>
-                                            </div>
-                                            <div class="mt-2">
-                                                {% if evaluations.clustering.statistical_significance.price_anova.significant %}
-                                                    <span class="badge bg-success">Statistically Significant</span>
-                                                {% else %}
-                                                    <span class="badge bg-warning">Not Significant</span>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-
-            </main>
-        </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.nav-link[data-section]');
-            const sections = document.querySelectorAll('.section-content');
+      document.addEventListener("DOMContentLoaded", function () {
+        const navLinks = document.querySelectorAll(".nav-link[data-section]");
+        const sections = document.querySelectorAll(".section-content");
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetSection = this.getAttribute('data-section');
-                    
-                    // Remove active class from all links and sections
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    sections.forEach(s => s.classList.remove('active'));
-                    
-                    // Add active class to clicked link and corresponding section
-                    this.classList.add('active');
-                    const targetElement = document.getElementById(targetSection);
-                    if (targetElement) {
-                        targetElement.classList.add('active');
-                    }
-                });
-            });
+        function activateSection(targetSection) {
+          navLinks.forEach((l) => l.classList.remove("active"));
+          sections.forEach((s) => s.classList.remove("active"));
+
+          const link = document.querySelector(
+            `.nav-link[data-section="${targetSection}"]`,
+          );
+          if (link) link.classList.add("active");
+
+          const targetElement = document.getElementById(targetSection);
+          if (targetElement) {
+            targetElement.classList.add("active");
+          }
+        }
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const targetSection = this.getAttribute("data-section");
+            activateSection(targetSection);
+          });
         });
-    </script>
-</body>
 
+        // Initialize from Django context to restore section after form submit
+        const initialSection =
+          "{{ active_section|default:'data-exploration' }}";
+        activateSection(initialSection);
+      });
+    </script>
+  </body>
 </html>

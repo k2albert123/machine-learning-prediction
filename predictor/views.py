@@ -39,12 +39,14 @@ def data_exploration_view(request):
     }
     
     # Handle form submissions
+    active_section = "data-exploration"
     if request.method == "POST":
-        year = int(request.POST["year"])
-        km = float(request.POST["km"])
-        seats = int(request.POST["seats"])
-        income = float(request.POST["income"])
+        year = int(request.POST.get("year", 2022))
+        km = float(request.POST.get("km", 0))
+        seats = int(request.POST.get("seats", 5))
+        income = float(request.POST.get("income", 0))
         form_type = request.POST.get("form_type", "")
+        active_section = request.POST.get("active_section", "data-exploration")
         
         if form_type == "regression":
             context["price"] = regression_model.predict([[year, km, seats, income]])[0]
@@ -58,6 +60,8 @@ def data_exploration_view(request):
                 "prediction": predict_cluster(income, predicted_price),
                 "price": predicted_price
             })
+    
+    context["active_section"] = active_section
     
     return render(request, "predictor/index.html", context)
 
