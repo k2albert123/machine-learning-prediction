@@ -16,7 +16,7 @@ class KBinsClusteringOptimizer:
 
     def __init__(self, features):
         self.features = features
-        self.income_weight = 3
+        self.income_weight = 10
         self.kbd_i = None
         self.kbd_p = None
         self.kmeans = None
@@ -30,14 +30,12 @@ class KBinsClusteringOptimizer:
             self.kbd_i = KBinsDiscretizer(
                 n_bins=6,
                 encode="ordinal",
-                strategy="quantile",
-                quantile_method="averaged_inverted_cdf"
+                strategy="kmeans"
             )
             self.kbd_p = KBinsDiscretizer(
                 n_bins=6,
                 encode="ordinal",
-                strategy="quantile",
-                quantile_method="averaged_inverted_cdf"
+                strategy="kmeans"
             )
             income_b = self.kbd_i.fit_transform(income)
             price_b = self.kbd_p.fit_transform(price)
@@ -360,7 +358,7 @@ scores = {
 
 best_approach = max(scores, key=scores.get)
 print(
-    f"\n✅ {best_approach.upper()} APPROACH SELECTED (Score: {scores[best_approach]:.3f})")
+    f"\n[SUCCESS] {best_approach.upper()} APPROACH SELECTED (Score: {scores[best_approach]:.3f})")
 
 # Use the best approach
 
