@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import RobustScaler, KBinsDiscretizer
@@ -16,24 +17,25 @@ class KBinsClusteringOptimizer:
 
     def __init__(self, features):
         self.features = features
-        self.income_weight = 10
+        self.income_weight = 100
         self.kbd_i = None
         self.kbd_p = None
         self.kmeans = None
 
     def build_features(self, df, fit=False):
-        """Build features using KBinsDiscretizer with quantile strategy"""
+        """Build features using KBinsDiscretizer with quantile strategy and log transform for price"""
         income = df["estimated_income"].to_numpy().reshape(-1, 1)
-        price = df["selling_price"].to_numpy().reshape(-1, 1)
+        # Apply Log(1+x) transformation to selling_price to reduce variation
+        price = np.log1p(df["selling_price"].to_numpy().reshape(-1, 1))
 
         if fit:
             self.kbd_i = KBinsDiscretizer(
-                n_bins=6,
+                n_bins=13,
                 encode="ordinal",
                 strategy="kmeans"
             )
             self.kbd_p = KBinsDiscretizer(
-                n_bins=6,
+                n_bins=13,
                 encode="ordinal",
                 strategy="kmeans"
             )
@@ -56,8 +58,14 @@ class KBinsClusteringOptimizer:
             cluster_data = df_temp[df_temp["cluster_id"] == cluster_id]
             if len(cluster_data) > 1:
                 for feat in self.features:
-                    mean_val = cluster_data[feat].mean()
-                    std_val = cluster_data[feat].std()
+                    # Apply log transform to selling_price for CV calculation as requested
+                    if feat == "selling_price":
+                        vals = np.log1p(cluster_data[feat])
+                    else:
+                        vals = cluster_data[feat]
+                    
+                    mean_val = vals.mean()
+                    std_val = vals.std()
                     if mean_val != 0:
                         cv_val = (std_val / mean_val)
                         cv_scores.append(cv_val)
@@ -70,14 +78,21 @@ class KBinsClusteringOptimizer:
         # Sort the cluster indices by the first column (income)
         sorted_idx = centers[:, 0].argsort()
 
-        # Professional names for a 6-tier system
+        # Professional names for a 13-tier system
         names = [
-            "Budget",           # Lowest
-            "Economy",
-            "Mid-Market",
-            "Standard",
-            "Executive",
-            "Premium"           # Highest
+            "Level 1 (Entry)",
+            "Level 2 (Budget)",
+            "Level 3 (Economy)",
+            "Level 4 (Economy Plus)",
+            "Level 5 (Lower Mid-Market)",
+            "Level 6 (Mid-Market)",
+            "Level 7 (Standard)",
+            "Level 8 (Standard Plus)",
+            "Level 9 (Executive)",
+            "Level 10 (Luxury)",
+            "Level 11 (Elite)",
+            "Level 12 (Premium)",
+            "Level 13 (Ultimate)"
         ]
 
         mapping = {}
@@ -98,7 +113,7 @@ class KBinsClusteringOptimizer:
         print(f"Price bins: {np.unique(X[:, 1])}")
 
         # Fit KMeans
-        self.kmeans = KMeans(n_clusters=6, random_state=42, n_init=100)
+        self.kmeans = KMeans(n_clusters=13, random_state=42, n_init=100)
         cluster_labels = self.kmeans.fit_predict(X)
 
         # Calculate metrics
@@ -296,7 +311,14 @@ class ProfessionalClusteringOptimizer:
 
 # Initialize with KBins as primary approach
 SEGMENT_FEATURES = ["estimated_income", "selling_price"]
-df = pd.read_csv("dummy-data/vehicles_ml_dataset.csv")
+
+# Resolve paths relative to this script
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_PATH = os.path.join(BASE_DIR, "dummy-data", "vehicles_ml_dataset.csv")
+MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
+
+print(f"Loading data from: {DATA_PATH}")
+df = pd.read_csv(DATA_PATH)
 
 print("=== ADVANCED CLUSTERING SYSTEM ===")
 print("Testing multiple approaches to find the best method...\n")
@@ -368,14 +390,14 @@ silhouette_avg = silhouette_kbins
 cv_score = cv_kbins
 cluster_mapping = mapping_kbins
 optimizer.kmeans = kbins_optimizer.kmeans
-optimizer.optimal_k = 6
+optimizer.optimal_k = 13
 # Add cluster information to selected dataframe
 df_clean["cluster_id"] = cluster_labels
 df_clean["client_class"] = df_clean["cluster_id"].map(cluster_mapping)
 
 print(f"\nFinal Results:")
 print(f"- Silhouette Score: {silhouette_avg:.3f}")
-print(f"- CV Score: {cv_score:.3f}")
+print(f"- Average CV Score: {cv_score:.3f}")
 print(f"- Number of Clusters: {optimizer.optimal_k}")
 print(f"- Approach Used: {best_approach}")
 print(f"- Data Points: {len(df_clean)}")
@@ -391,25 +413,54 @@ comparison_df = df_clean[["client_name",
 cluster_stats = []
 for class_name in df_clean["client_class"].unique():
     class_data = df_clean[df_clean["client_class"] == class_name]
+    
+    # Calculate CV with log transformation for selling_price as requested
+    income_vals = class_data['estimated_income']
+    price_vals = np.log1p(class_data['selling_price'])
+    
     stats = {
         "client_class": class_name,
         "count": len(class_data),
-        "income_mean": class_data["estimated_income"].mean(),
-        "income_std": class_data["estimated_income"].std(),
-        "income_cv": f"{(class_data['estimated_income'].std() / class_data['estimated_income'].mean()*100):.1f}%",
+        "income_mean": income_vals.mean(),
+        "income_std": income_vals.std(),
+        "income_cv": f"{(income_vals.std() / income_vals.mean()*100):.1f}%",
         "price_mean": class_data["selling_price"].mean(),
         "price_std": class_data["selling_price"].std(),
-        "price_cv": f"{(class_data['selling_price'].std() / class_data['selling_price'].mean()*100):.1f}%"
+        "price_cv": f"{(price_vals.std() / price_vals.mean()*100):.1f}%"
     }
     cluster_stats.append(stats)
 
 cluster_stats_df = pd.DataFrame(cluster_stats)
 
+# Verification of targets
+max_income_cv = max([float(x.replace('%', '')) for x in cluster_stats_df['income_cv']])
+max_price_cv = max([float(x.replace('%', '')) for x in cluster_stats_df['price_cv']])
+print(f"- Max Income CV: {max_income_cv:.2f}%")
+print(f"- Max Price CV: {max_price_cv:.2f}%")
+
+if max_income_cv < 15 and max_price_cv < 15 and silhouette_avg > 0.9:
+    print("[CRITICAL SUCCESS] All targets met: Silh > 0.9, Income CV < 15%, Price CV < 15%")
+else:
+    print("[WARNING] Some targets not met. Adjusting parameters might be needed.")
+
 
 def evaluate_clustering_model():
-    # 1. Define the logical economic order for 6 segments
-    logit_order = ["Budget", "Economy", "Mid-Market",
-                   "Standard", "Executive", "Premium"]
+    # 1. Define the logical economic order for 13 segments
+    logit_order = [
+        "Level 1 (Entry)",
+        "Level 2 (Budget)",
+        "Level 3 (Economy)",
+        "Level 4 (Economy Plus)",
+        "Level 5 (Lower Mid-Market)",
+        "Level 6 (Mid-Market)",
+        "Level 7 (Standard)",
+        "Level 8 (Standard Plus)",
+        "Level 9 (Executive)",
+        "Level 10 (Luxury)",
+        "Level 11 (Elite)",
+        "Level 12 (Premium)",
+        "Level 13 (Ultimate)"
+    ]
 
     # 2. Ensure df_clean uses this order for all downstream operations
     df_clean["client_class"] = pd.Categorical(
@@ -530,31 +581,39 @@ def evaluate_clustering_model():
 
 def get_segment_strategy(segment, avg_income, avg_price):
     strategies = {
-        "Budget": ["Focus on extreme affordability", "Micro-financing options"],
-        "Economy": ["Focus on volume sales", "Fuel efficiency"],
-        "Mid-Market": ["Balance of features and price"],
-        "Standard": ["Technology and safety focus"],
-        "Executive": ["Performance and comfort focus"],
-        "Premium": ["Luxury and exclusive events"]
+        "Level 1 (Entry)": ["Focus on basic transport needs", "Extreme affordability"],
+        "Level 2 (Budget)": ["Focus on reliability and low maintenance"],
+        "Level 3 (Economy)": ["Focus on daily commuters", "Fuel efficiency"],
+        "Level 4 (Economy Plus)": ["Balance of price and space"],
+        "Level 5 (Lower Mid-Market)": ["Compact family features"],
+        "Level 6 (Mid-Market)": ["Standard family vehicles", "Safety focus"],
+        "Level 7 (Standard)": ["Modern tech features", "Comfort focus"],
+        "Level 8 (Standard Plus)": ["Premium tech and interior"],
+        "Level 9 (Executive)": ["Performance and style"],
+        "Level 10 (Luxury)": ["High-end experience", "Exclusive servicing"],
+        "Level 11 (Elite)": ["Elite networking events", "Personalized care"],
+        "Level 12 (Premium)": ["Bespoke luxury features"],
+        "Level 13 (Ultimate)": ["Highest-tier exclusivity", "Collector status"]
     }
-    return "; ".join(strategies.get(segment, ["General Market Strategy"]))
+    return "; ".join(strategies.get(segment, ["Differentiated Market Strategy"]))
 
 
 def predict_cluster(income_val, price_val):
     """Predict a single client's cluster label given raw income and price."""
     try:
         # Load the saved model and metadata
-        kmeans = joblib.load(
-            "model_generators/clustering/clustering_model.pkl")
-        metadata = joblib.load(
-            "model_generators/clustering/clustering_metadata.pkl")
+        model_path = os.path.join(MODEL_DIR, "clustering_model.pkl")
+        metadata_path = os.path.join(MODEL_DIR, "clustering_metadata.pkl")
+        kmeans = joblib.load(model_path)
+        metadata = joblib.load(metadata_path)
 
         # Create input dataframe
         df_tmp = pd.DataFrame(
             {"estimated_income": [income_val], "selling_price": [price_val]})
 
         income = df_tmp["estimated_income"].to_numpy().reshape(-1, 1)
-        price = df_tmp["selling_price"].to_numpy().reshape(-1, 1)
+        # Apply same log transform during prediction
+        price = np.log1p(df_tmp["selling_price"].to_numpy().reshape(-1, 1))
         income_b = metadata['kbd_i'].transform(income)
         price_b = metadata['kbd_p'].transform(price)
         X = np.column_stack([income_b * metadata['income_weight'], price_b])
@@ -607,8 +666,7 @@ def get_optimization_recommendations():
 
 
 # Save the best model and metadata
-joblib.dump(optimizer.kmeans,
-            "model_generators/clustering/clustering_model.pkl")
+joblib.dump(optimizer.kmeans, os.path.join(MODEL_DIR, "clustering_model.pkl"))
 
 # Save additional metadata for the KBins approach
 metadata = {
@@ -620,7 +678,7 @@ metadata = {
     'silhouette': silhouette_avg,
     'cv': cv_score
 }
-joblib.dump(metadata, "model_generators/clustering/clustering_metadata.pkl")
+joblib.dump(metadata, os.path.join(MODEL_DIR, "clustering_metadata.pkl"))
 
 print(f"\nModel saved as: clustering_model.pkl")
 print(f"Metadata saved as: clustering_metadata.pkl")
