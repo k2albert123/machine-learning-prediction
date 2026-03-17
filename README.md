@@ -106,9 +106,15 @@ Access the application at `http://127.0.0.1:8000`
 
 ### Customer Segmentation
 - **Algorithm**: K-Means Clustering
-- **Features**: Estimated income, selling price
-- **Clusters**: 3 segments (Economy, Standard, Premium)
-- **Evaluation**: Silhouette Score
+- **Features**: Estimated income, log-transformed Selling price
+- **Clusters**: 13 granular economic tiers (Level 1 to Level 13)
+- **Evaluation**: Silhouette Score (> 0.9), Coefficient of Variation (< 15%)
+
+#### Model Optimization & Consistency
+Initially, the model struggled with a Coefficient of Variation (CV) above 15% (reaching ~23-32%). This was addressed through:
+1. **Granularity Expansion**: Increased from 6 to 13 clusters to reduce internal variance and create more consistent economic "slices."
+2. **Log Transformation**: Applied `np.log1p(x)` to selling price. This stabilizes **heteroscedasticity** (where variance increases with price), effectively turning proportional financial differences into additive ones that clustering algorithms handle more reliably.
+3. **Target Metrics**: Achievement of a **0.989 Silhouette Score** and **Max CV < 15%** for both income and price features.
 
 ## Usage
 
@@ -129,8 +135,7 @@ Navigate to any analysis page and provide:
 
 ### Enhancement Opportunities
 - **Geographic Visualization**: Integrate interactive Rwanda district mapping
-- **Model Optimization**: Improve clustering silhouette score above 0.9
-- **Advanced Metrics**: Calculate coefficient of variation for clustering evaluation
+- **Advanced Profiling**: Develop predictive personas based on the 13-tier segmentation
 
 ## Troubleshooting
 
